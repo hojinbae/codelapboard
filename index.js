@@ -11,6 +11,10 @@ const port = 3000;
 
 
 app.use(express.static(__dirname+'\\public'));
+app.use(cors({
+    origin: 'http://localhost:3000', // React 앱의 origin
+    credentials: true // 세션 쿠키를 전송하기 위해 필요
+}));
 app.use(session({
     secret: 'mySecretKey', // 세션을 암호화하기 위한 임의의 키
     resave: false, // 세션 정보가 수정되지 않은 경우에도 저장 하는지 여부 결정 (수정된 경우에만 저장)
@@ -19,6 +23,10 @@ app.use(session({
     // cookie:{
     //     maxAge: 5000 // 단위는 밀리세컨드
     // }
+    cookie: {
+        secure: false, // HTTPS를 통해 전송하는 경우 true로 설정
+        httpOnly: true, // JavaScript에서 세션 쿠키에 접근하지 못하도록 설정
+    }
 }));
 app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 console.log(__dirname)
@@ -87,7 +95,7 @@ app.get('/home',(req,res)=>{
 
 
 
-app.use(cors());
+
 app.use('/boardmain', require('./routes/boardmain')); // 게시판 메인 페이지 렌더링
 app.use('/create', require('./routes/create')); // 글 작성 페이지 렌더링
 app.use('/boarddetail', require('./routes/boarddetail')) // 상세 페이지 렌더링
