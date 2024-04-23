@@ -22,6 +22,7 @@ router.get('/',(req,res)=>{
 
 router.post('/', upload.array('files', 5), async(req,res)=>{
     // const { title, content } = req.body;
+    console.log("들어와라")
     const formData = req.body;
     console.log(formData)
     const files = req.files.map(file => {
