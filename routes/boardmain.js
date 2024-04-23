@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', async(req,res)=>{
     let conn;
-
+    console.log(req.session.loggedInUserId);
     if(!req.session.loggedIn){
         return res.redirect('/login'); // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
     }
@@ -15,6 +15,8 @@ router.get('/', async(req,res)=>{
     const loggedInUserId = req.session.loggedInUserId;
     const loggedInUserName = req.session.loggedInUserName;
     const loggedInUserNickName = req.session.loggedInUserNickName;
+
+
     try {
         conn = await oracledb.getConnection(dbConfig);
         let result = await conn.execute(
@@ -78,7 +80,19 @@ router.get('/', async(req,res)=>{
         const startPage = (totalPages - currentPage) < MAX_PAGE_LIMIT ? totalPages - MAX_PAGE_LIMIT + 1 : currentPage;
         const endPage = Math.min(startPage + MAX_PAGE_LIMIT - 1, totalPages)
 
-        res.render('index',{
+        // res.render('index',{
+        //     userId: loggedInUserId,
+        //     userNickName: loggedInUserNickName,
+        //     username: loggedInUserName,
+        //     posts: result.rows,
+        //     startPage: startPage,
+        //     currentPage: currentPage,
+        //     endPage: endPage,
+        //     totalPages: totalPages,
+        //     maxPageNumber: MAX_PAGE_LIMIT
+        // });
+
+        res.json({
             userId: loggedInUserId,
             userNickName: loggedInUserNickName,
             username: loggedInUserName,

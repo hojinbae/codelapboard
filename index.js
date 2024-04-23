@@ -11,7 +11,16 @@ const port = 3000;
 
 
 app.use(express.static(__dirname+'\\public'));
-
+app.use(session({
+    secret: 'mySecretKey', // 세션을 암호화하기 위한 임의의 키
+    resave: false, // 세션 정보가 수정되지 않은 경우에도 저장 하는지 여부 결정 (수정된 경우에만 저장)
+    saveUninitialized: true, // 모든 세션 정보 저장
+    // 세션의 유지 시간은 기본값은 브라우저 종료시까지 유지
+    // cookie:{
+    //     maxAge: 5000 // 단위는 밀리세컨드
+    // }
+}));
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 console.log(__dirname)
 oracledb.autoCommit = true;
 
@@ -73,15 +82,7 @@ app.get('/home',(req,res)=>{
 })
 
 
-app.use(session({
-    secret: 'mySecretKey', // 세션을 암호화하기 위한 임의의 키
-    resave: false, // 세션 정보가 수정되지 않은 경우에도 저장 하는지 여부 결정 (수정된 경우에만 저장)
-    saveUninitialized: true, // 모든 세션 정보 저장
-    // 세션의 유지 시간은 기본값은 브라우저 종료시까지 유지
-    // cookie:{
-    //     maxAge: 5000 // 단위는 밀리세컨드
-    // }
-}));
+
 
 
 

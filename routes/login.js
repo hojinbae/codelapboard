@@ -15,9 +15,10 @@ router.post('/', async(req, res)=>{
     console.log("이름 비번",id,password)
     // 사용자 인증작업
     const authenticatedUser = await varifyID(id, password);
-    console.log("들어옴?", authenticatedUser)
+    // console.log("들어옴?", authenticatedUser)
     // 인증 성공시 보드메인으로 리다이렉트
     if (authenticatedUser){
+        // console.log(authenticatedUser,"::::::::::")
         req.session.loggedIn = true;
         req.session.loggedInUserId = authenticatedUser.id; // 사용자 테이블의 ID (Primary key) 저장
         req.session.loggedInUserName = authenticatedUser.name;           // 사용자 테이블의 userID
