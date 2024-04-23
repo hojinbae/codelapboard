@@ -31,7 +31,7 @@ router.get('/:id', async (req, res)=>{
         };
 
         res.render('boardedit', {
-            boarder_code: board,
+            board: board,
             userId: userId,
             username: userName,
             userNickName: userNickName
