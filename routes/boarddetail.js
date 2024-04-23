@@ -46,10 +46,10 @@ router.get('/:id', async (req, res)=>{
 
         // 댓글 가져오기
         const commentResult = await conn.execute(
-            `SELECT c.comment_id, c.user_id, c.content, u.id AS author, TO_CHAR(c.created_at, 'YYYY-MM-DD HH:MM') AS created_at, c.parent_comment_id 
+            `SELECT c.comment_id, c.user_id, c.content, u.id AS author, TO_CHAR(c.create_at, 'YYYY-MM-DD HH:MM') AS create_at, c.parent_comment_id 
             FROM boarder_comments c
             JOIN users u ON c.user_id = u.id
-            WHERE c.post_id = :id
+            WHERE c.boarder_code = :id
             ORDER BY c.comment_id`,
             [board_code],
             { fetchInfo: { CONTENT: { type: oracledb.STRING } } }

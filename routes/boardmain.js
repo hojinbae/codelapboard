@@ -25,7 +25,7 @@ router.get('/', async(req,res)=>{
         const totalPages = Math.ceil(totalPosts / postPerPage); // 총 페이지수 계산
 
         let currentPage = req.query.page ? parseInt(req.query.page) : 1; // 현재 페이지 번호
-        const startRow = (currentPage -1) * postPerPage + 1;
+        const startRow = (currentPage - 1) * postPerPage + 1;
         const endRow = currentPage * postPerPage;
 
         // 정렬 방식에 따른 SQL 쿼리 작성
@@ -55,13 +55,13 @@ router.get('/', async(req,res)=>{
 // if() 다음 블록이 수행되지 않는 조건: false, falsy(0, null, NaN)
         const sql_query = `SELECT
                 boarder_code, title, author, to_char(created_at, 'YYYY-MM-DD'), views, likes,
-                (SELECT COUNT(*) FROM boarder_comments c WHERE c.boarder_code = b.code) AS comments_count
+                (SELECT COUNT(*) FROM boarder_comments c WHERE c.boarder_code = b.boarder_code) AS comments_count
             FROM(
                     SELECT
-                        b.code, b.title, u.id AS author, b.created_at, b.views, b.likes,
+                        b.boarder_code, b.title, u.id AS author, b.created_at, b.views, b.likes,
                         ROW_NUMBER() OVER (${orderByClause}) AS rn
                     FROM boarder b
-                            JOIN USERS u ON b.author_id = u.id
+                            JOIN USERS u ON b.user_id = u.id
                     WHERE 1=1
                         ${searchCondition}
                 ) b

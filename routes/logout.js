@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get('/',(req,res)=>{
     req.session.destroy(err => {
+        console.log(req.session);
         if (err) {
             console.error('세션 삭제 중 오류 발생: ', err);
             res.status(500).send('Internal Server Error');

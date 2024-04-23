@@ -23,11 +23,11 @@ router.post('/', async(req, res)=>{
         req.session.loggedInUserName = authenticatedUser.name;           // 사용자 테이블의 userID
         req.session.loggedInUserNickName = authenticatedUser.nickname; // 사용자 테이블에서 실제 이름 저장
 
-        // res.json({
-        //     loggedIn:req.session.loggedIn,
-        //     loginId:req.session.loggedInUserId
-        // })
-        res.redirect(`/boardmain`);
+        res.json({
+            loggedIn:req.session.loggedIn,
+            loginId:req.session.loggedInUserId
+        })
+        // res.redirect(`/boardmain`);
     } else {
         res.render('loginFail', { id });
     }
