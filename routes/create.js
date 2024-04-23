@@ -21,16 +21,22 @@ router.get('/',(req,res)=>{
 });
 
 router.post('/', upload.array('files', 5), async(req,res)=>{
-    // const { title, content } = req.body;
+    const { title, content } = req.body;
     console.log("들어와라")
     const formData = req.body;
     console.log(formData)
     const files = req.files.map(file => {
+        // return{
+        //     // 업로드된 파일의 원본 이름
+        //     image_path: file.image_path,
+        //     // 업로드된 파일의 변환된 이름
+        //     image_name: file.image_name
+        // };
         return{
             // 업로드된 파일의 원본 이름
-            image_path: file.image_path,
+            image_path: file.path,
             // 업로드된 파일의 변환된 이름
-            image_name: file.image_name
+            image_name: file.filename
         };
     });
     const user_id = req.session.loggedInUserId; // 현재 로그인한 사용자의 ID
