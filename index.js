@@ -12,7 +12,7 @@ const port = 3000;
 
 app.use(express.static(__dirname+'\\public'));
 app.use(cors({
-    origin: 'http://localhost:3000', // React 앱의 origin
+    origin: 'http://192.168.0.23:3000', // React 앱의 origin
     credentials: true // 세션 쿠키를 전송하기 위해 필요
 }));
 app.use(session({
