@@ -21,8 +21,9 @@ router.get('/',(req,res)=>{
 });
 
 router.post('/', upload.array('files', 5), async(req,res)=>{
-    const { title, content } = req.body;
-
+    // const { title, content } = req.body;
+    const formData = req.body;
+    console.log(formData)
     const files = req.files.map(file => {
         return{
             // 업로드된 파일의 원본 이름
