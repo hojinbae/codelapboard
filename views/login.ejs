@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <!--    <link rel="stylesheet" href="/css/style.css"> &lt;!&ndash; Nginx에 있는 CSS 파일을 참조합니다 &ndash;&gt;-->
+</head>
+<body>
+<header>
+    2조 프로젝트 입니다.
+    <!--    <img src="/images/header.png" alt="Header Image"> &lt;!&ndash; Nginx에 있는 이미지를 헤더에 넣습니다 &ndash;&gt;-->
+</header>
+
+<h1> 환영합니다!</h1> <!-- 사용자의 이름을 표시합니다 -->
+
+<form action="/login" method="post" enctype="form-data">
+    ID : <input type="text" name="id"><br>
+    <br>
+    PW : <input type="password" name="password"><br>
+    <!--    <a href="/boardmain" class = button type="submit"> 로그인</a>-->
+    <button type="submit"> 로그인 </button>
+</form>
+<a href = "/signup" method="post">
+    <button type = "submit"> 회원가입 </button>
+</a>
+<a href = "/boardmain" method = "post">
+    <button type = "submit"> 게시판 </button>
+</a>
+
+</body>
+</html>
