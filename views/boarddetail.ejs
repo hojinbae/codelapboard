@@ -210,10 +210,10 @@
 </table>
 <div class="attachment-section center">
     <div class="attachment-header">첨부 파일</div>
-    <% if (board.file_original_name && board.file_original_name !== '') { %>
+    <% if (board.image_path && board.image_path !== '') { %>
         <ul style="list-style-type: none; padding-left: 0;">
-            <% const originalNames = board.file_original_name.split(';'); %>
-            <% const storedNames = board.file_stored_name.split(';'); %>
+            <% const originalNames = board.image_path.split(';'); %>
+            <% const storedNames = board.image_name.split(';'); %>
             <% for (let i = 0; i < originalNames.length; i++) { %>
                 <li style="text-align: center;">
                     <!-- 다운로드 링크에 download 속성 추가하여 원본 파일 이름으로 다운로드 -->
@@ -236,7 +236,7 @@
         <% comments.forEach(comment => { %>
             <div class="comment">
                 <p><%= comment.author %>
-                    <% if (comment.author_id == userId) { %>
+                    <% if (comment.author == user_id) { %>
                         (본인)
                     <% } %>
                     &nbsp<%= comment.created_at %>
@@ -248,13 +248,14 @@
                 > -으로 연결된 단어는 카멜규칙을 적용한다.  comment-id => commentId
                 이후 제이쿼리 data함수에서 commentID로 정의된 값을 참조할 수 있다.
                 -->
-                <p class="comment-content" data-comment-id="<%= comment.id %>"><%= comment.content %></p> <!-- 여기서 '.comment-content'를 추가했습니다. -->
+                <p class="comment-content" data-comment-id="<%= comment.comment_id %>"><%= comment.content %></p> <!-- 여기서 '.comment-content'를 추가했습니다. -->
                 <div class="comment-buttons">
-                    <a href="#" class="reply-button" data-comment-id="<%= comment.id %>">답글쓰기</a>
-                    <% if (comment.author_id == userId) { %> <!-- 작성자 본인의 댓글일 경우 -->
-                    <button class="edit-button" data-comment-id="<%= comment.id %>">수정</button> <!-- 'data-comment-id' 속성 추가 -->
-                    <form action="/deleteComment/<%= comment.id %>" method="POST" style="display: inline;">
-                        <input type="hidden" name="post_id" value="<%= post.id %>">
+                    <a href="#" class="reply-button" data-comment-id="<%= comment.comment_id %>">답글쓰기</a>
+                    <% if (comment.author == user_id) { %> <!-- 작성자 본인의 댓글일 경우 -->
+                    <button class="edit-button" data-comment-id="<%= comment.comment_id %>">수정</button> <!-- 'data-comment-id' 속성 추가 -->
+<!--                    <%=comment.comment_id%>-->
+                    <form action="/deletecomment/<%=comment.comment_id%>" method="POST" style="display: inline;">
+                        <input type="hidden" name="boarder_code" value="<%= board.board_code %>">
                         <button type="submit">삭제</button>
                     </form>
                     <% } %>
@@ -264,18 +265,18 @@
                     <% comment.children.forEach(childComment => { %>
                         <div class="comment reply-form">
                             <p><%= childComment.author %>
-                                <% if (childComment.author_id == userId) { %>
+                                <% if (childComment.author == user_id) { %>
                                     (본인)
                                 <% } %>
                                 &nbsp<%= childComment.created_at %>
                             </p>
-                            <p class="comment-content" data-comment-id="<%= childComment.id %>"><%= childComment.content %></p> <!-- 여기서 '.comment-content'를 추가했습니다. -->
+                            <p class="comment-content" data-comment-id="<%= childComment.comment_id %>"><%= childComment.content %></p> <!-- 여기서 '.comment-content'를 추가했습니다. -->
                             <div class="comment-buttons">
-                                <a href="#" class="reply-button" data-comment-id="<%= comment.id %>">답글쓰기</a>
-                                <% if (childComment.author_id == userId) { %> <!-- 작성자 본인의 댓글일 경우 -->
-                                <button class="edit-button" data-comment-id="<%= childComment.id %>">수정</button> <!-- 'data-comment-id' 속성 추가 -->
-                                <form action="/deleteComment/<%= childComment.id %>" method="POST" style="display: inline;">
-                                    <input type="hidden" name="post_id" value="<%= post.id %>">
+                                <a href="#" class="reply-button" data-comment-id="<%= comment.comment_id %>">답글쓰기</a>
+                                <% if (childComment.author == user_id) { %> <!-- 작성자 본인의 댓글일 경우 -->
+                                <button class="edit-button" data-comment-id="<%= childComment.comment_id %>">수정</button> <!-- 'data-comment-id' 속성 추가 -->
+                                <form action="/deleteComment/<%= childComment.comment_id %>" method="POST" style="display: inline;">
+                                    <input type="hidden" name="boarder_code" value="<%= board.board_code %>">
                                     <button type="submit">삭제</button>
                                 </form>
                                 <% } %>
@@ -292,21 +293,21 @@
 </div>
 
 <div class="comment-form">
-    <form action="/addComment" method="POST">
+    <form action="/addcomment" method="POST">
         <textarea class="comment-input" name="content" rows="5" placeholder="'<%= userName%>'님 댓글을 남겨보세요" required></textarea><br>
-        <input type="hidden" name="post_id" value="<%= board.id %>"><br>
-        <input type="hidden" name="author_id" value="<%= userId %>"><br>
-        <!--        <input type="hidden" name="author_id" value="<%= board.author_id %>"><br>-->
-        <input type="hidden" name="content" value="<% board.content %>"><br>
+        <input type="hidden" name="boarder_code" value="<%= board.board_code %>"><br>
+        <input type="hidden" name="user_id" value="<%= user_id %>"><br>
+        <!--        <input type="hidden" name="author_id" value="<%= board.author %>"><br>-->
+<!--        <input type="hidden" name="content" value="<% board.content %>"><br>-->
         <input type="submit" value="등록" class="submit-button">
     </form>
 </div>
 <!-- 이전 페이지로 돌아가기 버튼 -->
 <div class="center">
     <a href="/boardmain" class="button">이전 페이지로 돌아가기</a>
-    <a href="/boardedit/<%= board.border_code %>" class="button">수정</a>
+    <a href="/boardedit/<%= board.board_code %>" class="button">수정</a>
 <!--    <a href="/boardedit/1" class="button">수정</a>-->
-    <a href="/boarddelete/<%= board.id %>" class="button">삭제</a>
+    <a href="/boarddelete/<%= board.board_code %>" class="button">삭제</a>
 </div>
 
 <script src="/js/jquery.js"></script>
@@ -323,11 +324,11 @@
             if (replyForm.length === 0) {
                 const newReplyForm = `
                     <div class="comment reply-form">
-                        <form action="/addComment" method="POST">
-                            <input type="hidden" name="post_id" value="<%= board.id %>">
-                            <input type="hidden" name="author_id" value="<%= userId %>">
+                        <form action="/addcomment" method="POST">
+                            <input type="hidden" name="boarder_code" value="<%= board.board_code %>">
+                            <input type="hidden" name="user_id" value="<%= user_id %>">
                             <input type="hidden" name="comment_id" value="${commentId}">
-                            <textarea class="comment-input" name="content" rows="3" placeholder="'<%= userId%>'님 답글을 남겨보세요" required></textarea><br>
+                            <textarea class="comment-input" name="content" rows="3" placeholder="'<%= user_id %>'님 답글을 남겨보세요" required></textarea><br>
                             <input type="submit" value="등록" class="submit-button">
                         </form>
                     </div>`;
@@ -337,19 +338,23 @@
 
         // '수정' 버튼 클릭 시 해당 댓글의 수정 화면을 동적으로 생성
         $(document).on('click', '.edit-button', function(e) {
+            // console.log("::::::::: edit-comment")
             e.preventDefault();
             const commentArea = $(this).closest('.comment');
+            console.log(commentArea,"::::::")
             const commentId = $(this).data('commentId');
+            // console.log(commentId,":::::::")
             const existingForm = commentArea.find('.edit-form');
+            // console.log(existingForm)
             if (existingForm.length === 0) {
-                const commentContent = commentArea.find(`.comment-content[data-comment-id="${commentId}"]`).text().trim();
+                const commentcontent = commentArea.find(`.comment-content[data-comment-id="${commentId}"]`).text().trim();
                 // 수정후 상세 페이지 리다이렉시시 필요한 게시글 id를 지정
-                const postId = '<%= board.id %>'; // 게시물 ID 가져오기
+                const board_code = '<%= board.board_code %>'; // 게시물 ID 가져오기
                 const editForm = `
                     <div class="comment edit-form">
-                        <form action="/editComment/${commentId}" method="POST">
-                            <textarea class="comment-input" name="content" rows="3" placeholder="댓글 수정 내용을 입력하세요" required>${commentContent}</textarea><br>
-                            <input type="hidden" name="post_id" value="${postId}"> <!-- 게시물 ID hidden으로 추가 -->
+                        <form action="/editcomment/${commentId}" method="POST">
+                            <textarea class="comment-input" name="content" rows="3" placeholder="댓글 수정 내용을 입력하세요" required>${commentcontent}</textarea><br>
+                            <input type="hidden" name="board_code" value="${board_code}"> <!-- 게시물 ID hidden으로 추가 -->
                             <input type="submit" value="수정 완료" class="submit-button">
                         </form>
                     </div>`;

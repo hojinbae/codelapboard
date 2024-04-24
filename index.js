@@ -102,9 +102,9 @@ app.use('/create', require('./routes/create')); // 글 작성 페이지 렌더�
 app.use('/boarddetail', require('./routes/boarddetail')) // 상세 페이지 렌더링
 app.use('/boardedit', require('./routes/boardedit')) // 수정 페이지 렌더링
 app.use('/boarddelete', require('./routes/boarddelete')) // 삭제 처리
-// app.use('/addComment', require('./routes/addComment')) // 댓글 추가 렌더링
-// app.use('/deleteComment', require('./routes/deleteComment')) // 댓글 삭제 렌더링
-// app.use('/editComment', require('./routes/editComment')) // 댓글 수정 렌더링
+app.use('/addcomment', require('./routes/addcomment')) // 댓글 추가 렌더링
+app.use('/deletecomment', require('./routes/deletecomment')) // 댓글 삭제 렌더링
+app.use('/editcomment', require('./routes/editcomment')) // 댓글 수정 렌더링
 app.use('/login', require('./routes/login')) // 로그인 페이지 렌더링
 app.use('/logout', require('./routes/logout')) // 로그아웃
 app.use('/loginFail', require('./routes/loginFail')) // 로그인 실패

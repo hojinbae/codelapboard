@@ -14,7 +14,7 @@ router.get('/:id', async (req, res)=>{
     let board_code = req.params.id;
     // console.log(board_code)
 
-    const userId = req.session.loggedInUserId;
+    const user_id = req.session.loggedInUserId;
     const userName = req.session.loggedInUserName;
     const userNickName = req.session.loggedInUserNickName;
     // console.log(`username: ${userName}`);
@@ -26,7 +26,7 @@ router.get('/:id', async (req, res)=>{
         // console.log(`board_code: ${board_code}`);
         // 조회수 증가 처리
         await conn.execute(
-            `UPDATE BOARDER SET views = views + 1 WHERE boarder_code = :boarder_code`,
+            `UPDATE BOARDER SET views = views + 1 WHERE boarder_code = :board_code`,
             [board_code]
         );
 
@@ -46,7 +46,7 @@ router.get('/:id', async (req, res)=>{
 
         // 댓글 가져오기
         const commentResult = await conn.execute(
-            `SELECT c.comment_id, c.user_id, c.content, u.id AS author, TO_CHAR(c.create_at, 'YYYY-MM-DD HH:MM') AS create_at, c.parent_comment_id 
+            `SELECT c.comment_id, c.boarder_code, c.content, u.id AS author, TO_CHAR(c.create_at, 'YYYY-MM-DD HH:MM') AS create_at, c.parent_comment_id 
             FROM boarder_comments c
             JOIN users u ON c.user_id = u.id
             WHERE c.boarder_code = :id
@@ -62,16 +62,16 @@ router.get('/:id', async (req, res)=>{
         commentResult.rows.forEach(row => {
             const comment = {
                 comment_id: row[0],
-                user_id: row[1],
+                boarder_code : row[1],
                 content: row[2],
-                author: row[3],
+                author : row[3],
                 created_at: row[4],
                 children: [] // 자식 댓글을 저장할 배열
             };
 
             const parentId = row[5]; // 부모 댓글의 id
 
-            if(parentID === null) {
+            if(parentId === null) {
                 // 부모 댓글이 null이면 바로 댓글 배열에 추가
                 comments.push(comment);
                 commentMap.set(comment.comment_id, comment); // 맵에 추가
@@ -93,9 +93,10 @@ router.get('/:id', async (req, res)=>{
             image_path: boardResult.rows[0][7],
             image_name: boardResult.rows[0][8]
         };
+        console.log(board);
         res.render('boarddetail',{
             board: board,
-            userId: userId,
+            user_id: user_id,
             userName: userName,
             userNickName: userNickName,
             comments: comments
