@@ -5,7 +5,9 @@ const dbConfig = require('../dbConfig');
 const router = express.Router();
 
 router.get('/',(req,res)=>{
+    console.log(req.session.loggedIn)
     req.session.destroy(err => {
+
         console.log(req.session);
         if (err) {
             console.error('세션 삭제 중 오류 발생: ', err);

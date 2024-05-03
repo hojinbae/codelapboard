@@ -16,7 +16,20 @@ router.post('/:commentId', async (req,res)=>{
             { content, commentId}
         );
         // 삭제 후 상세 페이지로 리다이렉트
-        res.redirect(`/boarddetail/${board_code}`);
+        // res.redirect(`/boarddetail/${board_code}`);
+        console.log(":::::::result::::",result)
+        if(result.rowsAffected === 1) {
+            res.json({
+
+                result: true
+            })
+        }else{
+            res.json({
+
+                result: false
+            })
+        }
+
     } catch (error) {
         // 댓글 수정 실패 시 에러 응답 반환
         res.status(500), send('댓글 수정 중 오류가 발생했습니다.');

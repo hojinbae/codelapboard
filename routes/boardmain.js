@@ -1,20 +1,23 @@
 const express = require('express');
 const oracledb = require('oracledb');
 const dbConfig = require('../dbConfig');
-const e = require("express");
+// const e = require("express");
 
 const router = express.Router();
 
 router.get('/', async(req,res)=>{
     let conn;
-    console.log(req.session.loggedInUserId);
-    // if(!req.session.loggedIn){
-    //     return res.redirect('/login'); // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
-    // }
+    // console.log("boradmain:::::",req.session.loggedInUserId);
+    if(!req.session.loggedIn){
+        return res.redirect('/login');
+        // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+    }
+    // console.log("session 없어도 진행")
 
     const loggedInUserId = req.session.loggedInUserId;
     const loggedInUserName = req.session.loggedInUserName;
     const loggedInUserNickName = req.session.loggedInUserNickName;
+    // console.log("session 없어도 진행:::",loggedInUserId)
 
 
     try {
@@ -23,7 +26,8 @@ router.get('/', async(req,res)=>{
             `SELECT COUNT(*) AS total FROM BOARDER`
         );
         const totalPosts = result.rows[0];
-        const postPerPage = 10; // 한페이지에 표시할 게시글 수
+        // console.log(totalPosts)
+        const postPerPage = 9; // 한페이지에 표시할 게시글 수
         const totalPages = Math.ceil(totalPosts / postPerPage); // 총 페이지수 계산
 
         let currentPage = req.query.page ? parseInt(req.query.page) : 1; // 현재 페이지 번호
@@ -56,43 +60,34 @@ router.get('/', async(req,res)=>{
 // if() 다음 블록에 들어가는 조건: true, truesy (false가 아닌 모든값)
 // if() 다음 블록이 수행되지 않는 조건: false, falsy(0, null, NaN)
         const sql_query = `SELECT
-                boarder_code, title, author, to_char(created_at, 'YYYY-MM-DD'), views, likes,
+                boarder_code, title, author, to_char(created_at, 'YYYY-MM-DD'), views, likes, content,image_name,
                 (SELECT COUNT(*) FROM boarder_comments c WHERE c.boarder_code = b.boarder_code) AS comments_count
             FROM(
                     SELECT
-                        b.boarder_code, b.title, u.id AS author, b.created_at, b.views, b.likes,
+                        b.boarder_code, b.title, u.id AS author, b.created_at, b.views, b.likes, b.content,b.image_name,
                         ROW_NUMBER() OVER (${orderByClause}) AS rn
                     FROM boarder b
                             JOIN USERS u ON b.user_id = u.id
                     WHERE 1=1
                         ${searchCondition}
                 ) b
-        WHERE rn BETWEEN :startRow AND :endRow
-        `;
-    result = await conn.execute(sql_query,
-        {
-            startRow: startRow,
-            endRow: endRow
-        }
-    );
+        WHERE rn BETWEEN :startRow AND :endRow`;
+        result = await conn.execute(
+            sql_query,
+            {
+                startRow: startRow,
+                endRow: endRow,
+            }
+            ,{ fetchInfo: { CONTENT: { type: oracledb.STRING } } }
+        );
+    // console.log(result.rows)
 
         const MAX_PAGE_LIMIT = 5;
-        const startPage = (totalPages - currentPage) < MAX_PAGE_LIMIT ? totalPages - MAX_PAGE_LIMIT + 1 : currentPage;
+        let startPage = (totalPages - currentPage) < MAX_PAGE_LIMIT ? totalPages - MAX_PAGE_LIMIT + 1 : currentPage;
+        if(totalPages<MAX_PAGE_LIMIT){startPage=1}
         const endPage = Math.min(startPage + MAX_PAGE_LIMIT - 1, totalPages)
 
-        res.render('index',{
-            userId: loggedInUserId,
-            userNickName: loggedInUserNickName,
-            username: loggedInUserName,
-            posts: result.rows,
-            startPage: startPage,
-            currentPage: currentPage,
-            endPage: endPage,
-            totalPages: totalPages,
-            maxPageNumber: MAX_PAGE_LIMIT
-        });
-
-        // res.json({
+        // res.render('index',{
         //     userId: loggedInUserId,
         //     userNickName: loggedInUserNickName,
         //     username: loggedInUserName,
@@ -103,6 +98,18 @@ router.get('/', async(req,res)=>{
         //     totalPages: totalPages,
         //     maxPageNumber: MAX_PAGE_LIMIT
         // });
+
+        res.json({
+            userId: loggedInUserId,
+            userNickName: loggedInUserNickName,
+            username: loggedInUserName,
+            board: result.rows,
+            startPage: startPage,
+            currentPage: currentPage,
+            endPage: endPage,
+            totalPages: totalPages,
+            maxPageNumber: MAX_PAGE_LIMIT
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');

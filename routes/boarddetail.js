@@ -36,9 +36,10 @@ router.get('/:id', async (req, res)=>{
         // 게시글 정보 가져오기
         const boardResult = await conn.execute(
             `SELECT b.boarder_code, b.title, u.id AS author, b.content, TO_CHAR(b.created_at, 'YYYY-MM-DD') AS created_at,
-                    b.views, b.likes, b.image_path, b.image_name
+                    b.views, b.likes, b.image_path, b.image_name,f.festivalname
              FROM BOARDER b      
                    JOIN USERS u ON b.user_id = u.id
+                   JOIN FESTIVALS f on b.festival_code = f.festivalid
              WHERE b.boarder_code = :id`,
             [board_code],
             { fetchInfo: { CONTENT: { type: oracledb.STRING } } }
@@ -91,10 +92,18 @@ router.get('/:id', async (req, res)=>{
             views: boardResult.rows[0][5],
             likes: boardResult.rows[0][6],
             image_path: boardResult.rows[0][7],
-            image_name: boardResult.rows[0][8]
+            image_name: boardResult.rows[0][8],
+            festival_name:boardResult.rows[0][9]
         };
         console.log(board);
-        res.render('boarddetail',{
+        // res.render('boarddetail',{
+        //     board: board,
+        //     user_id: user_id,
+        //     userName: userName,
+        //     userNickName: userNickName,
+        //     comments: comments
+        // });
+        res.json({
             board: board,
             user_id: user_id,
             userName: userName,

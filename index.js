@@ -13,7 +13,7 @@ const port = 3000;
 app.use(express.static(__dirname+'\\public'));
 
 app.use(cors({
-    origin: 'http://localhost:3000', // React 앱의 origin
+    origin: 'http://localhost:3001', // React 앱의 origin
     credentials: true // 세션 쿠키를 전송하기 위해 필요
 }));
 app.use(session({
@@ -33,7 +33,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 console.log(__dirname)
 oracledb.autoCommit = true;
 
-oracledb.initOracleClient({ libDir: '../instantclient_21_13' });
+oracledb.initOracleClient({ libDir: './instantclient_21_13' });
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -51,40 +51,40 @@ app.set('view engine', 'ejs');
 // const WEB_SERVER_HOME = '../HOME/html';
 // app.use('/', express.static(WEB_SERVER_HOME + '/'));
 
-selectDatabase();
+// selectDatabase();
 
-async function selectDatabase() {
-
-    // console.log("!!!!! db conenction(여기가 제일먼저) !!!!!");
-
-    // await: 비동기 수행시 해당 명령어가 완료될때까지 기다려주는 키워드
-    let connection = await oracledb.getConnection(dbConfig);
-
-    let binds = {};
-    let options = {
-        // 쿼리의 결과가 객체 형식으로 반환
-        outFormat: oracledb.OUT_FORMAT_OBJECT   // query result format
-    };
-    // console.log(binds)
-    // console.log(options)
-    // console.log(connection)
-    // console.log(selectDatabase)
-    // console.log("!!!!! db select(여기가3번째) !!!!!");
-
-    let result = await connection.execute("select * from users", binds, options);
-
-    // console.log(result)
-    // console.log("!!!!! db response(여기가4번째)` !!!!!");
-    // console.log(result.rows); // 여기가 5번째
-    // console.log(result.rows[0]); // 여기가 6번째 김철수씨 정보
-    // // 이름 열을 접근하려면? 배열일 경우
-    // console.log(result.rows[0][3]);
-    // console.log(result.rows[0].NAME); // 여기가 7번째 김철수씨 이름
-
-    // console.log("!!!!! db close(여기가 마지막) !!!!!");
-    await connection.close();
-
-}
+// async function selectDatabase() {
+//
+//     // console.log("!!!!! db conenction(여기가 제일먼저) !!!!!");
+//
+//     // await: 비동기 수행시 해당 명령어가 완료될때까지 기다려주는 키워드
+//     let connection = await oracledb.getConnection(dbConfig);
+//
+//     let binds = {};
+//     let options = {
+//         // 쿼리의 결과가 객체 형식으로 반환
+//         outFormat: oracledb.OUT_FORMAT_OBJECT   // query result format
+//     };
+//     // console.log(binds)
+//     // console.log(options)
+//     // console.log(connection)
+//     // console.log(selectDatabase)
+//     // console.log("!!!!! db select(여기가3번째) !!!!!");
+//
+//     let result = await connection.execute("select * from users", binds, options);
+//
+//     // console.log(result)
+//     // console.log("!!!!! db response(여기가4번째)` !!!!!");
+//     // console.log(result.rows); // 여기가 5번째
+//     // console.log(result.rows[0]); // 여기가 6번째 김철수씨 정보
+//     // // 이름 열을 접근하려면? 배열일 경우
+//     // console.log(result.rows[0][3]);
+//     // console.log(result.rows[0].NAME); // 여기가 7번째 김철수씨 이름
+//
+//     // console.log("!!!!! db close(여기가 마지막) !!!!!");
+//     await connection.close();
+//
+// }
 
 app.get('/home',(req,res)=>{
     res.render('home')
@@ -111,3 +111,4 @@ app.use('/loginFail', require('./routes/loginFail')) // 로그인 실패
 app.use('/signup', require('./routes/signup')) // 회원가입
 app.use('/idcheck', require('./routes/IdCheck')) // 회원가입 시 아이디 중복 체크
 app.use('/main', require('./routes/main')) // 임시 메인페이지
+app.use('/festivalselect', require('./routes/festivalselect')) // 임시 메인페이지

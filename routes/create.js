@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('express')
 const oracledb = require('oracledb');
 const dbConfig = require('../dbConfig');
 const multer = require('multer');
@@ -13,7 +13,8 @@ const upload = multer({ dest: path.join(__dirname, 'temp'), encoding: 'utf8' });
 
 router.get('/',(req,res)=>{
     // 로그인 여부 확인 로직 작성
-    res.render('create', {
+    console.log(req.session.loggedIn+":::::::ddd")
+    res.json({
         loggedInUserId : req.session.loggedInUserId,
         loggedInUserName : req.session.loggedInUserName,
         loggedInUserNickName : req.session.loggedInUserNickName
@@ -21,7 +22,7 @@ router.get('/',(req,res)=>{
 });
 
 router.post('/', upload.array('files', 5), async(req,res)=>{
-    const { title, content } = req.body;
+    const { title, content, festival_code } = req.body;
     console.log("들어와라")
     const formData = req.body;
     console.log(formData)
@@ -40,6 +41,7 @@ router.post('/', upload.array('files', 5), async(req,res)=>{
         };
     });
     const user_id = req.session.loggedInUserId; // 현재 로그인한 사용자의 ID
+    console.log("::::userid",user_id)
     let conn;
     try{
         conn = await oracledb.getConnection(dbConfig);
@@ -52,16 +54,52 @@ router.post('/', upload.array('files', 5), async(req,res)=>{
 
         // 게시글 삽입
         await conn.execute(
-            `INSERT INTO BOARDER (boarder_code, user_id, title, content, image_path, image_name  ) VALUES(:boarder_code, :user_id, :title, :content, :image_path, :image_name)`,
+            `INSERT INTO BOARDER (boarder_code, user_id, title, content, image_path, image_name,festival_code  ) VALUES(:boarder_code, :user_id, :title, :content, :image_path, :image_name, :festival_code)`,
             {
                 boarder_code: boarder_code,
                 user_id: user_id,
                 title: title,
                 content: content,
                 image_path: files.map(file => file.image_path).join(';'), // 파일의 원본 이름을 세미콜론으로 구분하여 저장
-                image_name: files.map(file => file.image_name).join(';') // 파일의 변환된 이름을 세미콜론으로 구분하여 저장
+                image_name: files.map(file => file.image_name).join(';'), // 파일의 변환된 이름을 세미콜론으로 구분하여 저장
+                festival_code:festival_code
             }
         );
+
+        const checkPrimery = await conn.execute(
+            `SELECT * FROM festival_image where festivalid = :festival_code `,
+            {festival_code:festival_code}
+        );
+        console.log("::::::result festival:::",checkPrimery)
+        if(checkPrimery.rows.length === 0) {
+            // console.log("::::: is null?::::")
+            await conn.execute(
+                `INSERT INTO FESTIVAL_IMAGE (festivalid, image_name, image_data) VALUES (:festival_code, :image_name, :image_path)`,
+                {
+                    festival_code: festival_code,
+                    // 파일의 원본 이름을 세미콜론으로 구분하여 저장
+                    image_name: files.map(file => file.image_name).join(';'), // 파일의 변환된 이름을 세미콜론으로 구분하여 저장
+                    image_path: files.map(file => file.image_path).join(';')
+
+                }
+            );
+        }else{
+            const combinedImageName = files.map(file => file.image_name).join(';')+";"+checkPrimery.rows[0][1];
+            const combinedImagePath = files.map(file => file.image_path).join(';')+";"+checkPrimery.rows[0][2];
+            await conn.execute(
+                `UPDATE FESTIVAL_IMAGE set image_name=:image_name,image_data=:image_path where festivalid = :festival_code`,
+                {
+
+                     // 파일의 원본 이름을 세미콜론으로 구분하여 저장
+                    image_name: combinedImageName, // 파일의 변환된 이름을 세미콜론으로 구분하여 저장
+                    image_path: combinedImagePath,
+                    festival_code:festival_code
+
+                }
+            );
+        }
+
+
 
         // 변경 사항 커밋
         await conn.commit();

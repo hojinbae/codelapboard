@@ -19,9 +19,17 @@ router.get('/:id', async(req,res)=>{
     const resultDeleteComments = await DeleteComments(postId)
 
     if (resultDeleteComments) {
-        res.redirect(`/boardmain?id= ${userId}&userNickName=${userNickName}&username=${userName}`);
+        res.json({
+            result : true
+            }
+
+        )
     } else {
-        res.send("에러남")
+        res.json({
+                result : false
+            }
+
+        )
     }
 });
 

@@ -4,13 +4,43 @@ const dbConfig = require('../dbConfig');
 
 const router = express.Router();
 
-router.get('/',(req,res)=>{
-    const boarder_code = req.params.id;
+router.get('/',async(req,res)=>{
+    // const boarder_code = req.params.id;
     const userId =  req.session.loggedInUserId;
     const username = req.session.loggedInUserName;
     const usernickname =  req.session.loggedInUserNickName;
 
-    res.render('addcomment',{boarder_code: boarder_code, userId: userId, username: username, usernickname: usernickname});
+    let conn;
+    try {
+        conn = await oracledb.getConnection(dbConfig);
+
+        const result = await conn.execute(
+            `SELECT *
+             FROM festivals
+             WHERE STARTDATE <= SYSDATE AND ENDDATE >= SYSDATE-14`
+        );
+        await conn.commit();
+        console.log(result.rows)
+
+        // res.redirect(`/boarddetail/${boarder_code}`);
+        res.json({
+           festival:result.rows
+        })
+    } catch (err) {
+        // res.status(500).send('서버 에러');
+        res.json({result:false})
+    } finally {
+        if (conn) {
+            try {
+                await conn.close();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
+
+
+
 
 });
 
@@ -44,13 +74,14 @@ router.post('/',async(req, res)=>{
         res.json({result:false})
     } finally {
         if (conn) {
-         try {
-             await conn.close();
-         } catch (err) {
-             console.error(err);
-         }
+            try {
+                await conn.close();
+            } catch (err) {
+                console.error(err);
+            }
         }
     }
 });
+
 
 module.exports = router;

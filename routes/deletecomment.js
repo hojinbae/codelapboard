@@ -12,7 +12,7 @@ router.post('/:id', async(req,res)=>{
 
     const comment_id = req.params.id;
     const boarder_code = req.body.boarder_code;
-    // console.log(comment_id,boarder_code,"::::::::")
+    console.log(comment_id,boarder_code,"::::::::")
     let conn;
 
     try{
@@ -25,9 +25,15 @@ router.post('/:id', async(req,res)=>{
         conn.commit();
 
         // 삭제 후 상세 페이지로 리다이렉트
-        res.redirect(`/boarddetail/${boarder_code}`);
+        // res.redirect(`/boarddetail/${boarder_code}`);
+        res.json({
+            result:true
+        })
     } catch (err) {
-        res.status(500).send('댓글 삭제 중 오류 발생.');
+        // res.status(500).send('댓글 삭제 중 오류 발생.');
+        res.json({
+            result:false
+        })
     } finally {
         if(conn) {
             try{
