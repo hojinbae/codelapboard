@@ -8,11 +8,15 @@ const router = express.Router();
 router.get('/', async(req,res)=>{
     let conn;
     // console.log("boradmain:::::",req.session.loggedInUserId);
-    if(!req.session.loggedIn){
-        return res.redirect('/login');
-        // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
-    }
+    // if(!req.session.loggedIn){
+    //     return res.redirect('/login');
+    //     // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+    // }
     // console.log("session 없어도 진행")
+    if(!req.session.loggedInUserId){
+        req.session.loggedInUserId=req.query.user_id
+    }
+
 
     const loggedInUserId = req.session.loggedInUserId;
     const loggedInUserName = req.session.loggedInUserName;

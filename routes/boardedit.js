@@ -52,6 +52,9 @@ router.get('/:id', async (req, res)=>{
 
 router.post('/', async(req,res)=>{
     const { boarder_code, title, content } = req.body;
+    if(!req.session.loggedInUserId){
+        req.session.loggedInUserId=req.body.user_id
+    }
     const userId = req.session.loggedInUserId
     const userName =  req.session.loggedInUserName;
     const userNickName = req.session.loggedInUserNickName;

@@ -7,17 +7,21 @@ const router = express.Router();
 
 router.get('/:id', async (req, res)=>{
     // 로그인 여부 확인
-    if (!req.session.loggedIn) {
-        return res.redirect('/login'); // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+    // if (!req.session.loggedIn) {
+    //     return res.redirect('/login'); // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+    // }
+    if(!req.session.loggedInUserId){
+        req.session.loggedInUserId=req.query.user_id
     }
+    // const user_id = req.session.loggedInUserId;
 
     let board_code = req.params.id;
-    // console.log(board_code)
+    console.log(board_code)
 
     const user_id = req.session.loggedInUserId;
     const userName = req.session.loggedInUserName;
     const userNickName = req.session.loggedInUserNickName;
-    // console.log(`username: ${userName}`);
+    console.log("username:",user_id);
 
     let conn;
     try {
@@ -82,6 +86,8 @@ router.get('/:id', async (req, res)=>{
                 parentComment.children.push(comment);
             }
         });
+
+        // console.log(boardResult);
 
         const board = {
             board_code: boardResult.rows[0][0],

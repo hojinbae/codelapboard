@@ -16,9 +16,9 @@ router.get('/',(req,res)=>{
 
 router.post('/',async(req, res)=>{
     // 로그인 여부 확인
-    if (!req.session.loggedIn) {
-        return res.redirect('/login'); // 로그인되지 않은 경우 로그인 페이지로 리다이렉트 게시판 댓글
-    }
+    // if (!req.session.loggedIn) {
+    //     return res.redirect('/login'); // 로그인되지 않은 경우 로그인 페이지로 리다이렉트 게시판 댓글
+    // }
 
     const { content, boarder_code, user_id} = req.body;
     const comment_id = req.body.comment_id;

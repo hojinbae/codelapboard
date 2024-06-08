@@ -40,6 +40,9 @@ router.post('/', upload.array('files', 5), async(req,res)=>{
             image_name: file.filename
         };
     });
+    if(!req.session.loggedInUserId){
+        req.session.loggedInUserId=req.body.user_id;
+    }
     const user_id = req.session.loggedInUserId; // 현재 로그인한 사용자의 ID
     console.log("::::userid",user_id)
     let conn;

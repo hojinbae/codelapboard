@@ -5,8 +5,19 @@ const dbConfig = require('../dbConfig');
 const router = express.Router();
 
 router.get('/', async (req, res)=>{
+    const clientIP = req.ip; // 클라이언트의 IP 주소 확인
+    console.log('Client IP address: ' + clientIP);
+    // const currentDomain = window.location.hostname;
+    // console.log("현재 도메인:", currentDomain);
+    const currentDomain = req.hostname;
+    console.log("현재 도메인:", currentDomain);
+
     let conn;
-    // console.log("boradmain:::::",req.session.loggedInUserId);
+    if(!req.session.loggedInUserId){
+        req.session.loggedInUserId=req.query.user_id
+        // console.log("::::::",req.query)
+    }
+    console.log("boradmain:::::",req.query.user_id);
 
     // console.log("session 없어도 진행")
 
