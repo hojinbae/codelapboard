@@ -65,7 +65,7 @@ router.post('/', async(req,res)=>{
         conn = await oracledb.getConnection(dbConfig);
 
         // 게시글 수정
-        await conn.execute(
+        let result = await conn.execute(
             `UPDATE boarder SET title = :title, content = :content WHERE boarder_code = :boarder_code`,
             [title, content, boarder_code]
         );
@@ -74,7 +74,19 @@ router.post('/', async(req,res)=>{
         await conn.commit();
 
         // 수정 후 상세 페이지로 리다이렉트
-        res.redirect(`/boarddetail/${boarder_code}?user_id=${userId}&username${userName}&userNickName=${userNickName}`);
+        // res.redirect(`/boarddetail/${boarder_code}?user_id=${userId}&username${userName}&userNickName=${userNickName}`);
+        console.log(":::::::result::::",result)
+        if(result.rowsAffected === 1) {
+            res.json({
+
+                result: true
+            })
+        }else{
+            res.json({
+
+                result: false
+            })
+        }
     } catch (err) {
         console.error('게시글 수정 중 오류 발생:', err);
         res.status(500).send('게시글 수정 중 오류가 발생했습니다.');

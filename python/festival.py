@@ -42,7 +42,8 @@ def get_festivals():
         # print("::::::::::::::::")
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT f.*, i.image_name FROM festivals f JOIN festival_image i ON f.festivalid = i.festivalid WHERE f.STARTDATE <= SYSDATE AND f.ENDDATE >= SYSDATE - 14")
+        cursor.execute("SELECT f.*, i.image_name FROM festivals f JOIN festival_image i ON f.festivalid = i.festivalid WHERE  f.ENDDATE >= SYSDATE")
+        # cursor.execute("SELECT f.*, i.image_name FROM festivals f JOIN festival_image i ON f.festivalid = i.festivalid WHERE f.STARTDATE <= SYSDATE AND f.ENDDATE >= SYSDATE - 14")
         # rows = cursor.fetchall()
         # cursor.close()
         # connection.close()
@@ -168,7 +169,8 @@ class FestivalData(Resource):
             # selected_zone = request.args.get('selectedZone')
             if selected_zone:
                 cur.execute(
-                    "SELECT f.*, i.image_name FROM festivals f JOIN festival_image i ON f.festivalid = i.festivalid WHERE (RoadAddress LIKE '%' || :zone || '%' OR JibunAddress LIKE '%' || :zone || '%') AND f.STARTDATE <= SYSDATE AND f.ENDDATE >= SYSDATE - 14",
+                    "SELECT f.*, i.image_name FROM festivals f JOIN festival_image i ON f.festivalid = i.festivalid WHERE (RoadAddress LIKE '%' || :zone || '%' OR JibunAddress LIKE '%' || :zone || '%') AND  f.ENDDATE >= SYSDATE ",
+                    # "SELECT f.*, i.image_name FROM festivals f JOIN festival_image i ON f.festivalid = i.festivalid WHERE (RoadAddress LIKE '%' || :zone || '%' OR JibunAddress LIKE '%' || :zone || '%') AND f.STARTDATE <= SYSDATE AND f.ENDDATE >= SYSDATE - 14",
                     {'zone': selected_zone})
             elif festival_id:
                 cur.execute(

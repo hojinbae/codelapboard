@@ -48,9 +48,9 @@ oracledb.initOracleClient({ libDir: './instantclient_21_13' });
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-    res.redirect('/home')
-});
+// app.get('/', (req, res) => {
+//     res.redirect('/home')
+// });
 app.get('/like/:id', async (req, res) => {
     if(!req.session.loggedInUserId){
         req.session.loggedInUserId=req.query.user_id
